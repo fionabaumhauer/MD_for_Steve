@@ -1,0 +1,9 @@
+tolerance 2
+output temp.xyz
+filetype xyz
+seed 28446
+
+structure /scratch/fb590/co2n2/electric/prepareMD/templates/CO2.xyz
+   number  300
+   inside box 2.0 2.0 2.0 32.0 32.0 32.0
+end structure

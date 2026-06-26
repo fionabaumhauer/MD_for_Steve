@@ -1,0 +1,14 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+for T_dir in "$SCRIPT_DIR"/T*/; do
+    for rho_dir in "$T_dir"rho_*/; do
+        (
+            cd "$rho_dir"
+            echo "Submitting $rho_dir"
+            cp "$SCRIPT_DIR/submit_MD" .
+            sbatch submit_MD
+        )
+    done
+done

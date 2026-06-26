@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#SBATCH -J MD_co2/n2
+# No -A account line needed
+#SBATCH -p shared
+
+#SBATCH -t 03:00:00
+#SBATCH -N 1
+#SBATCH -n 16
+
+#SBATCH --mail-type=NONE
+#SBATCH --no-requeue
+
+numnodes=$SLURM_JOB_NUM_NODES
+numtasks=$SLURM_NTASKS
+mpi_tasks_per_node=$(echo "$SLURM_TASKS_PER_NODE" | sed -e  's/^\([0-9][0-9]*\).*$/\1/')
+start_time=$(date +%s)
+
+. /etc/profile.d/modules.sh
+module purge
+module load gcc
+module load intelmpi/2021.6
+
+export PATH=/nobackup/xjyq89/lammps-install/bin:$PATH
+export I_MPI_FABRICS=shm
+
+workdir="$SLURM_SUBMIT_DIR"
+
+CMD="mpirun -np $numtasks lmp -in in.lammps"
+
+###############################################################
+### You should not have to change anything below this line ####
+###############################################################
+
+cd $workdir
+echo -e "Changed directory to `pwd`.\n"
+
+JOBID=$SLURM_JOB_ID
+
+echo -e "JobID: $JOBID\n======"
+echo "Time: `date`"
+echo "Running on master node: `hostname`"
+echo "Current directory: `pwd`"
+
+# Removed generate_pbs_nodefile block — CSD3-specific
+
+echo -e "\nExecuting command:\n==================\n$CMD\n"
+
+eval $CMD
+
+end_time=$(date +%s)
+elapsed_time=$((end_time - start_time))
+echo "Job completed at $(date)"
+echo "Total runtime: $(date -ud "@$elapsed_time" +'%H:%M:%S') (HH:MM:SS)"
